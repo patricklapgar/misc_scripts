@@ -37,8 +37,9 @@ OPTS=""; OUT="/tmp/vec-measure"
 SYSROOT=""; EXTRA_FLAGS=""
 PROJECT=""; NAME=""; TARGETS=""; CMAKE_ARGS=""; GREP_PATH=""
 INCLUDES=()
+use_origin=false
 
-while getopts "x:C:I:O:o:s:f:p:n:t:c:g:r:h" opt; do
+while getopts "x:C:I:O:o:s:f:p:n:t:c:g:r:h:u" opt; do
   case "$opt" in
     x) CXX="$OPTARG" ;;
     C) CC="$OPTARG" ;;
@@ -53,6 +54,7 @@ while getopts "x:C:I:O:o:s:f:p:n:t:c:g:r:h" opt; do
     c) CMAKE_ARGS="$OPTARG" ;;
     g) GREP_PATH="$OPTARG" ;;
     r) HDR="$OPTARG/llvm-project" ;;
+    u) use_origin=true ;;
     h|*) sed -n '2,/^$/p' "${BASH_SOURCE[0]}"; exit 1 ;;
   esac
 done
@@ -84,7 +86,14 @@ fi
 BEFORE_DIR="$OUT/hdr-before"
 AFTER_DIR="$OUT/hdr-after"
 mkdir -p "$BEFORE_DIR" "$AFTER_DIR"
-git -C "$HDR" show "HEAD:$HDR_REL" > "$BEFORE_DIR/vecintrin.h"
+
+# Check if the working-tree = HEAD. If so, grab the origin, else use local HEAD
+if [ "$use_origin" = true ] || git -C "$HDR" diff --quiet "HEAD" -- "$HDR_REL"; then
+  git -C "$HDR" show "origin/HEAD:$HDR_REL" > "$BEFORE_DIR/vecintrin.h"
+else
+  git -C "$HDR" show "HEAD:$HDR_REL" > "$BEFORE_DIR/vecintrin.h"
+fi 
+
 cp "$HDR/$HDR_REL" "$AFTER_DIR/vecintrin.h"
 
 if cmp -s "$BEFORE_DIR/vecintrin.h" "$AFTER_DIR/vecintrin.h"; then
