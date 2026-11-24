@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Mark the Tier 1 SystemZ vector wrappers in vecintrin.h as constexpr (C++ only).
+"""Change headers of certain SystemZ vector wrappers in a header file to be constexpr (C++ only).
 
 Usage:
-   convert-constexpr.py [--dry-run] [path/to/vecintrin.h]
+   convert-constexpr.py [--dry-run] [path/to/file.h]
 
 Default path is clang/lib/Headers/vecintrin.h relative to the repository root.
 
@@ -11,10 +11,10 @@ What it does:
     existing __ATTRS_o_ai definition (skipped if already present). In C, and in
     C++ older than C++11/14, they expand to the old attributes, so C behaviour
     is unchanged.
- 2. For every Tier 1 wrapper definition:
+ 2. For the wrapper definition:
       - single-statement body  -> *_constexpr
       - multi-statement body   -> *_constexpr14 (needs C++14 relaxed constexpr)
-      - body calls __builtin_s390_* -> left alone (Tier 2: needs evaluator work)
+      - body calls __builtin_s390_* -> skipped (needs evaluator work)
 
 The script is idempotent: wrappers that were already converted are not matched
 again. Review the resulting `git diff` before committing.

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Compare SystemZ vector-instruction counts with and without the modified
-# clang/lib/Headers/vecintrin.h.
+# header file
 #
 #   BEFORE header = vecintrin.h as committed in git HEAD
 #   AFTER  header = vecintrin.h in your working tree
 #
 # Usage:
-#   Single files:  measure-vec-constexpr.sh [options] file.cpp [file2.cpp ...]
-#   CMake project: measure-vec-constexpr.sh [options] -p PROJECT_DIR
+#   Single files:  measure-vec-instr.sh [options] file.cpp [file2.cpp ...]
+#   CMake project: measure-vec-instr.sh [options] -p PROJECT_DIR
 #
 # Options:
 #   -x CXX     clang++ that can target s390x (env CXX; default: autodetect)
